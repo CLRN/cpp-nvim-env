@@ -47,6 +47,17 @@ RUN git clone --depth 1 --branch release https://github.com/ninja-build/ninja.gi
     cmake -Bbuild-cmake && cd build-cmake && make install -j 6 && cp /usr/local/bin/ninja /usr/bin/ninja && \
     cd ../../ && rm -rf ninja
 
+# Install Boost
+ARG BOOST_VERSION=1.84.0
+RUN cd /tmp && \
+    BOOST_VERSION_MOD=$(echo $BOOST_VERSION | tr . _) && \
+    wget https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_MOD}.tar.bz2 && \
+    tar --bzip2 -xf boost_${BOOST_VERSION_MOD}.tar.bz2 && \
+    cd boost_${BOOST_VERSION_MOD} && \
+    ./bootstrap.sh --with-toolset=clang --prefix=/usr/local && \
+    ./b2 -j 6 install && \
+    rm -rf /tmp/*
+
 # neovim
 RUN git clone --branch release-0.9 --depth 1 https://github.com/neovim/neovim.git && \
     cd neovim && make CMAKE_BUILD_TYPE=Release install -j 6 && \
@@ -76,24 +87,15 @@ RUN curl -LO https://github.com/microsoft/vscode-cpptools/releases/download/v1.1
     mv extension/debugAdapters/bin/* /usr/local/bin/ && \
     chmod 777 /usr/local/bin/OpenDebugAD7 && \
     rm -rf extension 
+COPY ./gdbinit /root/.gdbinit
 
+# codelldb
 RUN curl -LO https://github.com/vadimcn/codelldb/releases/download/v1.10.0/codelldb-x86_64-linux.vsix && \ 
-    unzip codelldb-x86_64-linux.vsix && \
+    unzip -o codelldb-x86_64-linux.vsix && \
     mv extension /usr/local/bin/codelldb && \
     rm -rf codelldb-x86_64-linux.vsix 
-
 ENV PATH=$PATH:/usr/local/bin/codelldb/adapter
-
-# Install Boost
-ENV BOOST_VERSION=1.84.0
-RUN cd /tmp && \
-    BOOST_VERSION_MOD=$(echo $BOOST_VERSION | tr . _) && \
-    wget https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_MOD}.tar.bz2 && \
-    tar --bzip2 -xf boost_${BOOST_VERSION_MOD}.tar.bz2 && \
-    cd boost_${BOOST_VERSION_MOD} && \
-    ./bootstrap.sh --with-toolset=clang --prefix=/usr/local && \
-    ./b2 -j 6 install && \
-    rm -rf /tmp/*
+RUN codelldb --version
 
 # git
 RUN git config --global credential.helper store
@@ -103,7 +105,5 @@ RUN git config --global pull.rebase true
 
 ENV LD_LIBRARY_PATH=/usr/local/lib/
 ENV SHELL=/usr/bin/bash
-
-COPY ./gdbinit /root/.gdbinit
 
 CMD ["/usr/bin/bash"]
