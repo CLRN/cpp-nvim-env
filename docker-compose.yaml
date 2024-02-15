@@ -6,8 +6,8 @@ volumes:
 
 services:
   dev-cpp:
-    image: nvim-cpp:latest
-    container_name: nvim-cpp
+    image: clrn/cpp-nvim:latest
+    container_name: cpp-nvim
     stdin_open: true 
     tty: true 
     volumes:
