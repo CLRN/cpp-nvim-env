@@ -18,6 +18,8 @@ RUN apt-get update && apt-get install -y --allow-unauthenticated \
     curl \
     && apt-get clean
 
+RUN add-apt-repository universe -y && apt-get update
+
 # clang
 RUN wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && ./llvm.sh $CLANG_VERSION && rm -rf llvm.sh
 RUN apt-get install -y --allow-unauthenticated clang-tools-$CLANG_VERSION
@@ -81,21 +83,7 @@ RUN LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygi
 # fzf
 RUN git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && ~/.fzf/install
 
-# cpp debuggers
-RUN curl -LO https://github.com/microsoft/vscode-cpptools/releases/download/v1.18.5/cpptools-linux.vsix && \ 
-    unzip cpptools-linux.vsix && \
-    mv extension/debugAdapters/bin/* /usr/local/bin/ && \
-    chmod 777 /usr/local/bin/OpenDebugAD7 && \
-    rm -rf extension 
 COPY ./gdbinit /root/.gdbinit
-
-# codelldb
-RUN curl -LO https://github.com/vadimcn/codelldb/releases/download/v1.10.0/codelldb-x86_64-linux.vsix && \ 
-    unzip -o codelldb-x86_64-linux.vsix && \
-    mv extension /usr/local/bin/codelldb && \
-    rm -rf codelldb-x86_64-linux.vsix 
-ENV PATH=$PATH:/usr/local/bin/codelldb/adapter
-RUN codelldb --version
 
 # git
 RUN git config --global credential.helper store
