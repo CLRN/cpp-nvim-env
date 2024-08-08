@@ -61,7 +61,7 @@ RUN cd /tmp && \
     rm -rf /tmp/*
 
 # neovim
-RUN git clone --branch release-0.9 --depth 1 https://github.com/neovim/neovim.git && \
+RUN git clone --branch release-0.10 --depth 1 https://github.com/neovim/neovim.git && \
     cd neovim && make CMAKE_BUILD_TYPE=Release install -j 6 && \
     cd .. && rm -rf neovim
 RUN nvim -v
