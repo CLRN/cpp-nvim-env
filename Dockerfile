@@ -69,6 +69,12 @@ RUN nvim -v
 # My config
 RUN git clone https://github.com/CLRN/nvim-config.git ~/.config/nvim
 
+# Node
+RUN apt-get remove -y nodejs nodejs-doc libnode-dev
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs 
+RUN node --version | grep v20
+
 # Install packer.nvim for installing plugins
 RUN git clone --depth 1 https://github.com/wbthomason/packer.nvim \
  ~/.local/share/nvim/site/pack/packer/start/packer.nvim
