@@ -24,7 +24,7 @@ spec:
         - image: clrn/cpp-nvim:latest
           imagePullPolicy: Always
           name: vim
-          args: ["nvim"]
+          args: ["-c", "sleep infinity"]
           workingDir: /code
           volumeMounts:
             - mountPath: /data

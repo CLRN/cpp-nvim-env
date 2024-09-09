@@ -95,4 +95,4 @@ RUN git config --global pull.rebase true
 ENV LD_LIBRARY_PATH=/usr/local/lib/
 ENV SHELL=/usr/bin/bash
 
-CMD ["/usr/bin/bash"]
+ENTRYPOINT ["/usr/bin/bash"]
