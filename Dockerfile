@@ -60,25 +60,11 @@ RUN cd /tmp && \
     ./b2 -j 6 install && \
     rm -rf /tmp/*
 
-# neovim
-RUN git clone --branch release-0.10 --depth 1 https://github.com/neovim/neovim.git && \
-    cd neovim && make CMAKE_BUILD_TYPE=Release install -j 6 && \
-    cd .. && rm -rf neovim
-RUN nvim -v
-
-# My config
-RUN git clone https://github.com/CLRN/nvim-config.git ~/.config/nvim
-
 # Node
 RUN apt-get remove -y nodejs nodejs-doc libnode-dev
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs 
 RUN node --version | grep v20
-
-# Install packer.nvim for installing plugins
-RUN git clone --depth 1 https://github.com/wbthomason/packer.nvim \
- ~/.local/share/nvim/site/pack/packer/start/packer.nvim
-RUN nvim --headless -c ':MasonInstallAll' +qall
 
 # lazy git
 RUN LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*') && \
@@ -88,6 +74,15 @@ RUN LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygi
 
 # fzf
 RUN git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf && ~/.fzf/install
+
+# neovim
+RUN git clone --branch release-0.10 --depth 1 https://github.com/neovim/neovim.git && \
+    cd neovim && make CMAKE_BUILD_TYPE=Release install -j 6 && \
+    cd .. && rm -rf neovim
+RUN nvim -v
+
+# neovim config and dependencies
+RUN git clone https://github.com/CLRN/nvim-config.git ~/.config/nvim && nvim --headless -c ':MasonInstallAll' +qall
 
 COPY ./gdbinit /root/.gdbinit
 
